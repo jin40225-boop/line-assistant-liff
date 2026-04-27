@@ -143,7 +143,13 @@
     (async () => {
       try {
         const liffId = new URLSearchParams(location.search).get("liffId");
-        if (liffId && window.liff) await liff.init({ liffId });
+        if (liffId && window.liff) {
+          try {
+            await liff.init({ liffId });
+          } catch (error) {
+            console.warn("LIFF init skipped:", error);
+          }
+        }
         const params = new URLSearchParams(location.search);
         const apiBase = params.get("api") || `${location.origin}/functions/v1/line-webhook/liff/record.json`;
         const apiUrl = `${apiBase}${apiBase.includes("?") ? "&" : "?"}${params.toString()}`;
