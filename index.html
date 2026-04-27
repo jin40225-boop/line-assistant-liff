@@ -144,7 +144,9 @@
       try {
         const liffId = new URLSearchParams(location.search).get("liffId");
         if (liffId && window.liff) await liff.init({ liffId });
-        const apiUrl = `${location.origin}/functions/v1/line-webhook/liff/record.json${location.search}`;
+        const params = new URLSearchParams(location.search);
+        const apiBase = params.get("api") || `${location.origin}/functions/v1/line-webhook/liff/record.json`;
+        const apiUrl = `${apiBase}${apiBase.includes("?") ? "&" : "?"}${params.toString()}`;
         const res = await fetch(apiUrl, { headers: { accept: "application/json" } });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
