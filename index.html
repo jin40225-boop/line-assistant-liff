@@ -1,148 +1,384 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>LINE Assistant 明細</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    :root { color-scheme: light; --line:#06c755; --ink:#172026; --muted:#66737c; --bg:#f5f7f8; --card:#fff; --border:#dbe2e6; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
-    main { width: min(760px, 100%); margin: 0 auto; padding: 18px 14px 28px; }
-    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 6px 2px 12px; }
-    .eyebrow { margin: 0 0 3px; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
-    h1 { margin: 0; font-size: 22px; line-height: 1.25; }
-    h2 { margin: 0 0 12px; font-size: 16px; display: flex; align-items: center; justify-content: space-between; }
-    h2 span { color: var(--muted); font-weight: 650; }
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin: 10px 0; }
-    .grid { display: grid; gap: 10px; }
-    .kv { display: grid; grid-template-columns: 88px 1fr; gap: 7px 12px; }
-    .kv span { color: var(--muted); }
-    .kv strong { font-weight: 650; overflow-wrap: anywhere; }
-    .summary, .next { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border); }
-    .next { color: #23485f; }
-    .status, .pill { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-    .ok { color: #087a34; background: #dcf8e6; }
-    .warn { color: #8a5a00; background: #fff3cf; }
-    .bad { color: #9d1c1c; background: #ffe0e0; }
-    .new { color: #075f2a; background: #def8e8; }
-    .reuse { color: #36505f; background: #e8eef2; }
-    .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
-    .items li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 7px; }
-    .items .empty { color: var(--muted); justify-content: center; }
-    small { display: block; color: var(--muted); margin-top: 2px; }
-    .row-actions, .actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-    .actions { margin-top: 14px; }
-    a, button { appearance: none; border: 1px solid var(--border); border-radius: 7px; background: #fff; color: var(--ink); text-decoration: none; padding: 8px 10px; font: inherit; font-weight: 650; }
-    a.primary { background: var(--line); border-color: var(--line); color: white; }
-    .row-actions a { padding: 4px 7px; font-size: 12px; }
-    pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; color: #26343d; }
-    .muted { color: var(--muted); }
-    .notice { border-radius: 8px; padding: 12px; margin: 10px 0; }
-    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
-  </style>
-</head>
-<body>
-  <main id="app"><section class="panel">讀取中...</section></main>
-  <script>
-    const app = document.getElementById("app");
-    const esc = (value) => String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-    const fmt = (value) => {
-      if (!value) return "";
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return value;
-      return new Intl.DateTimeFormat("zh-TW", {
-        timeZone: "Asia/Taipei",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(date);
-    };
-    const link = (label, url, kind = "") => url
-      ? `<a class="${kind}" href="${esc(url)}" target="_blank" rel="noreferrer">${esc(label)}</a>`
-      : "";
-    const section = (title, items = [], includeGcal = false) => `
-      <section class="panel">
-        <h2>${esc(title)} <span>${items.length}</span></h2>
-        <ul class="items">${
-          items.length ? items.map((item) => `
-            <li>
-              <div>
-                <strong>${esc(item.title || "未命名")}</strong>
-                ${item.date ? `<small>${esc(fmt(item.date))}</small>` : ""}
-              </div>
-              <div class="row-actions">
-                <span class="pill ${item.created ? "new" : "reuse"}">${item.created ? "新增" : "重用"}</span>
-                ${link("Notion", item.url)}
-                ${includeGcal ? link("GCal", item.gcalUrl) : ""}
-              </div>
-            </li>`).join("")
-          : `<li class="empty">沒有建立或關聯</li>`
-        }</ul>
-      </section>`;
-    const summary = (data) => {
-      const entries = Object.entries(data.summary || {}).filter(([, value]) => typeof value !== "object");
-      if (!entries.length) return "<p>尚無摘要資料。</p>";
-      return `<div class="kv">${entries.map(([key, value]) => `<span>${esc(key)}</span><strong>${esc(value)}</strong>`).join("")}</div>`;
-    };
-    const render = (data) => {
-      const record = data.record || {};
-      const statusClass = data.status === "success" ? "ok" : data.status === "failed" ? "bad" : "warn";
-      document.title = record.title || "LINE Assistant 明細";
-      app.innerHTML = `
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">LINE Assistant</p>
-            <h1>${esc(record.title || "V2 記錄明細")}</h1>
-          </div>
-          <span class="status ${statusClass}">${esc(data.status || "unknown")}</span>
-        </header>
-        ${data.error ? `<section class="notice bad">${esc(data.error)}</section>` : ""}
-        <section class="panel">
-          <div class="kv">
-            <span>類型</span><strong>${esc(record.type || data.intent || "-")}</strong>
-            <span>建立時間</span><strong>${esc(data.createdAtText || "-")}</strong>
-            <span>處理時間</span><strong>${data.processingMs ? `${data.processingMs} ms` : "-"}</strong>
-            <span>追蹤</span><strong>${record.needsFollowup ? "需要" : "不需要"}</strong>
-          </div>
-          ${record.summary ? `<p class="summary">${esc(record.summary)}</p>` : ""}
-          ${record.nextStep ? `<p class="next">下一步：${esc(record.nextStep)}</p>` : ""}
-          <div class="actions">
-            ${link("開啟 Notion 記錄", record.url, "primary")}
-            ${data.recordId ? `<button type="button" data-copy="${esc(data.recordId)}">複製記錄 ID</button>` : ""}
-          </div>
-        </section>
-        <section class="grid">
-          ${section("對象", data.objects)}
-          ${section("資源", data.resources)}
-          ${section("指標 / 任務", data.indicators)}
-          ${section("期程 / 行事曆", data.schedules, true)}
-        </section>
-        <section class="panel">
-          <h2>原始訊息</h2>
-          <pre>${esc(data.rawText || "")}</pre>
-        </section>
-        <section class="panel muted">
-          <h2>處理摘要</h2>
-          ${summary(data)}
-        </section>`;
-    };
-    document.addEventListener("click", async (event) => {
-      const button = event.target.closest("button[data-copy]");
-      if (!button) return;
-      await navigator.clipboard.writeText(button.dataset.copy);
-      button.textContent = "已複製";
-    });
-    (async () => {
-      try {
-        const liffId = new URLSearchParams(location.search).get("liffId");
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>LINE Assistant</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --line: #06c755;
+        --line-dark: #04a947;
+        --ink: #17242c;
+        --muted: #667682;
+        --bg: #f4f7f8;
+        --card: #fff;
+        --border: #dbe3e7;
+        --soft: #eef5f2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      main {
+        width: min(900px, 100%);
+        margin: 0 auto;
+        padding: 18px 14px 28px;
+      }
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 2px 12px;
+      }
+      .eyebrow, .topbar p, small {
+        margin: 0;
+        color: var(--muted);
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h2 span {
+        color: var(--muted);
+        font-weight: 650;
+      }
+      h3 {
+        margin: 3px 0 2px;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      button, input, select, textarea {
+        font: inherit;
+      }
+      nav {
+        display: inline-flex;
+        gap: 6px;
+      }
+      a, button, nav a {
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--ink);
+        text-decoration: none;
+        padding: 7px 9px;
+        font-weight: 700;
+      }
+      button {
+        cursor: pointer;
+      }
+      button.primary, a.primary {
+        background: var(--line);
+        border-color: var(--line);
+        color: white;
+      }
+      button:disabled {
+        background: #9ddbb5;
+        cursor: wait;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 8px 0 12px;
+      }
+      .metric {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        display: grid;
+        gap: 2px;
+      }
+      .metric span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .metric strong {
+        font-size: 22px;
+      }
+      .grid {
+        display: grid;
+        gap: 10px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        margin: 0 0 12px;
+      }
+      .section-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .section-heading h2 {
+        margin: 0;
+      }
+      form {
+        display: grid;
+        gap: 10px;
+      }
+      label {
+        display: grid;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      input, select, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--ink);
+        padding: 9px 10px;
+        min-height: 40px;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+      .checkline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 10px;
+        border-radius: 7px;
+        background: var(--soft);
+        color: var(--ink);
+      }
+      .checkline input {
+        width: auto;
+        min-height: auto;
+      }
+      .form-actions, .row-actions, .context-actions, .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .form-actions p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .form-actions a, .context-actions a {
+        color: var(--line-dark);
+        font-weight: 800;
+        text-decoration: none;
+        border: 0;
+        padding: 0;
+      }
+      .context-grid {
+        display: grid;
+        gap: 9px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+      .context-card, .context-empty {
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 11px;
+        background: #fff;
+      }
+      .context-card {
+        display: grid;
+        gap: 8px;
+      }
+      .context-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .context-card ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 4px;
+        color: #30434e;
+        font-size: 13px;
+      }
+      .context-kind {
+        display: inline-flex;
+        border-radius: 999px;
+        background: var(--soft);
+        color: #2f5f49;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .context-actions {
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .context-empty, .empty {
+        color: var(--muted);
+        text-align: center;
+      }
+      .items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 9px;
+      }
+      .items li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+      }
+      .items .empty {
+        justify-content: center;
+      }
+      .pill, .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #36505f;
+        background: #e8eef2;
+        white-space: nowrap;
+      }
+      .ok {
+        color: #087a34;
+        background: #dcf8e6;
+      }
+      .warn {
+        color: #8a5a00;
+        background: #fff3cf;
+      }
+      .bad {
+        color: #9d1c1c;
+        background: #ffe0e0;
+      }
+      .new {
+        color: #075f2a;
+        background: #def8e8;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: 88px 1fr;
+        gap: 7px 12px;
+      }
+      .kv span {
+        color: var(--muted);
+      }
+      .kv strong {
+        font-weight: 650;
+        overflow-wrap: anywhere;
+      }
+      .summary, .next {
+        margin: 12px 0 0;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+      .next {
+        color: #23485f;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin: 0;
+        color: #26343d;
+      }
+      .notice {
+        border-radius: 8px;
+        padding: 12px;
+        margin: 10px 0;
+      }
+      @media (max-width: 560px) {
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .topbar, .field-row {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (min-width: 780px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app"><section class="panel">讀取中...</section></main>
+    <script>
+      const app = document.getElementById("app");
+      const params = new URLSearchParams(location.search);
+      const esc = (value) =>
+        String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      const attr = esc;
+      const fmt = (value) => {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return new Intl.DateTimeFormat("zh-TW", {
+          timeZone: "Asia/Taipei",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(date);
+      };
+      const link = (label, url, kind = "") =>
+        url
+          ? `<a class="${kind}" href="${attr(url)}" target="_blank" rel="noreferrer">${
+            esc(label)
+          }</a>`
+          : "";
+      const apiUrlWithParams = (base, keep) => {
+        const url = new URL(base);
+        for (const key of keep) {
+          const value = params.get(key);
+          if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
+        }
+        return url.toString();
+      };
+
+      async function initLiff() {
+        const liffId = params.get("liffId");
         if (liffId && window.liff) {
           try {
             await liff.init({ liffId });
@@ -150,17 +386,293 @@
             console.warn("LIFF init skipped:", error);
           }
         }
-        const params = new URLSearchParams(location.search);
-        const apiBase = params.get("api") || `${location.origin}/functions/v1/line-webhook/liff/record.json`;
-        const apiUrl = `${apiBase}${apiBase.includes("?") ? "&" : "?"}${params.toString()}`;
-        const res = await fetch(apiUrl, { headers: { accept: "application/json" } });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
-        render(data);
-      } catch (error) {
-        app.innerHTML = `<section class="panel"><h1>讀取失敗</h1><p>${esc(error.message || error)}</p></section>`;
       }
-    })();
-  </script>
-</body>
+
+      function metric(label, count) {
+        return `<article class="metric"><span>${esc(label)}</span><strong>${
+          count ?? 0
+        }</strong></article>`;
+      }
+
+      function renderBriefing(data) {
+        document.title = `${data.label || ""}工作台`;
+        app.innerHTML = `
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">LINE Assistant V3</p>
+            <h1>${esc(data.label || "今日")}工作台</h1>
+            <p>${esc(fmt(data.range?.start))}</p>
+          </div>
+          <nav>
+            <a href="${briefingHref("today")}">今日</a>
+            <a href="${briefingHref("tomorrow")}">明日</a>
+          </nav>
+        </header>
+        ${
+          (data.errors || []).length
+            ? `<section class="notice warn">${(data.errors || []).map(esc).join("<br>")}</section>`
+            : ""
+        }
+        <section class="summary-grid">
+          ${metric("行事曆", data.calendar?.length)}
+          ${metric("期程", data.schedules?.length)}
+          ${metric("任務", data.tasks?.length)}
+          ${metric("備忘", data.memos?.length)}
+        </section>
+        ${quickCreatePanel(data)}
+        ${contextSection(data.contextCards || [])}
+        <section class="grid">
+          ${briefingSection("Google Calendar", data.calendar || [], "沒有行事曆事件")}
+          ${briefingSection("V3 期程", data.schedules || [], "沒有 V3 期程")}
+          ${briefingSection("V3 任務", data.tasks || [], "沒有未完成任務")}
+          ${briefingSection("未整理備忘", data.memos || [], "沒有未整理備忘")}
+        </section>`;
+        bindBriefingForm(data);
+      }
+
+      function briefingHref(date) {
+        const next = new URL(location.href);
+        next.searchParams.set("mode", "briefing");
+        next.searchParams.set("date", date);
+        return next.toString();
+      }
+
+      function quickCreatePanel(data) {
+        return `
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">新增草稿</p>
+              <h2>補一筆${esc(data.label || "")}事項</h2>
+            </div>
+            <span class="pill">先進草稿</span>
+          </div>
+          <form id="briefing-draft-form" data-date-key="${
+          attr(data.dateKey || params.get("date") || "today")
+        }">
+            <div class="field-row">
+              <label><span>類型</span><select name="entityType"><option value="schedule">期程 / 提醒</option><option value="task">任務 / 待辦</option><option value="memo">備忘 / Inbox</option></select></label>
+              <label><span>重要程度</span><select name="priority"><option value="">未指定</option><option value="高">高</option><option value="中">中</option><option value="低">低</option></select></label>
+            </div>
+            <label><span>標題</span><input name="title" autocomplete="off" placeholder="例如：下午找童小姐確認餐點" required></label>
+            <div class="field-row">
+              <label><span>開始時間</span><input name="start" type="datetime-local"></label>
+              <label><span>結束時間</span><input name="end" type="datetime-local"></label>
+            </div>
+            <label class="checkline"><input name="syncGoogleCalendar" type="checkbox"><span>若是期程，確認後同步 Google Calendar</span></label>
+            <label><span>補充內容 / 關聯線索</span><textarea name="note" rows="3" placeholder="可寫人員、單位、專案、地點，進草稿後再選關聯"></textarea></label>
+            <div class="form-actions"><button class="primary" type="submit">建立草稿</button><p id="briefing-draft-result" role="status"></p></div>
+          </form>
+        </section>`;
+      }
+
+      function bindBriefingForm() {
+        const form = document.querySelector("#briefing-draft-form");
+        const result = document.querySelector("#briefing-draft-result");
+        if (!form) return;
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const createApi = params.get("createApi");
+          if (!createApi) {
+            result.textContent = "缺少 createApi，無法建立草稿。";
+            return;
+          }
+          const submit = form.querySelector("button[type='submit']");
+          const formData = new FormData(form);
+          const payload = {
+            dateKey: form.dataset.dateKey || "",
+            entityType: String(formData.get("entityType") || "schedule"),
+            title: String(formData.get("title") || "").trim(),
+            start: normalizeLocalDateTime(String(formData.get("start") || "")),
+            end: normalizeLocalDateTime(String(formData.get("end") || "")),
+            priority: String(formData.get("priority") || ""),
+            note: String(formData.get("note") || "").trim(),
+            syncGoogleCalendar: formData.get("syncGoogleCalendar") === "on",
+          };
+          if (!payload.title) {
+            result.textContent = "請先輸入標題。";
+            return;
+          }
+          submit.disabled = true;
+          result.textContent = "建立草稿中...";
+          try {
+            const res = await fetch(createApi, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.message || "建立失敗");
+            result.innerHTML = data.editUrl
+              ? `<a href="${attr(data.editUrl)}">開啟草稿編輯</a>`
+              : "草稿已建立";
+          } catch (error) {
+            result.textContent = error.message || String(error);
+          } finally {
+            submit.disabled = false;
+          }
+        });
+      }
+
+      function normalizeLocalDateTime(value) {
+        if (!value) return "";
+        return value.length === 16 ? `${value}:00+08:00` : value;
+      }
+
+      function contextSection(cards) {
+        const rows = cards.length
+          ? cards.slice(0, 12).map(contextCard).join("")
+          : `<article class="context-empty">尚未從今日事項找到已關聯的人員、單位、資源或專案。</article>`;
+        return `
+        <section class="panel">
+          <div class="section-heading"><div><p class="eyebrow">情境小卡</p><h2>今日相關資料</h2></div><span class="pill">${cards.length}</span></div>
+          <div class="context-grid">${rows}</div>
+        </section>`;
+      }
+
+      function contextCard(card) {
+        const rows = [
+          card.phone ? `電話 ${card.phone}` : "",
+          card.email ? `Email ${card.email}` : "",
+          card.address ? `地址 ${card.address}` : "",
+          card.note || "",
+        ].filter(Boolean);
+        return `
+        <article class="context-card">
+          <div><span class="context-kind">${esc(kindLabel(card.kind))}</span><h3>${
+          esc(card.title)
+        }</h3><p>${esc([card.type, card.status].filter(Boolean).join(" / "))}</p></div>
+          ${rows.length ? `<ul>${rows.map((row) => `<li>${esc(row)}</li>`).join("")}</ul>` : ""}
+          <div class="context-actions"><span>關聯 ${card.sourceCount || 1} 筆</span>${
+          card.url ? `<a href="${attr(card.url)}" target="_blank" rel="noreferrer">開啟</a>` : ""
+        }</div>
+        </article>`;
+      }
+
+      function kindLabel(kind) {
+        return ({
+          people: "人員",
+          organizations: "單位",
+          resources: "資源",
+          projects: "專案",
+          cases: "個案",
+          tasks: "任務",
+          records: "紀錄",
+          memos: "備忘",
+        })[kind] || kind;
+      }
+
+      function briefingSection(title, items, emptyText) {
+        const rows = items.length
+          ? items.map((item) => `
+          <li>
+            <div><strong>${esc(item.title || "未命名")}</strong><small>${
+            esc([fmt(item.date), item.meta].filter(Boolean).join(" / "))
+          }</small></div>
+            <div class="row-actions"><span class="pill">${
+            esc(item.status || item.type || "")
+          }</span>${link("開啟", item.url)}</div>
+          </li>`).join("")
+          : `<li class="empty">${esc(emptyText)}</li>`;
+        return `<section class="panel"><h2>${
+          esc(title)
+        } <span>${items.length}</span></h2><ul class="items">${rows}</ul></section>`;
+      }
+
+      function renderRecord(data) {
+        const record = data.record || {};
+        const statusClass = data.status === "success"
+          ? "ok"
+          : data.status === "failed"
+          ? "bad"
+          : "warn";
+        document.title = record.title || "LINE Assistant 明細";
+        app.innerHTML = `
+        <header class="topbar"><div><p class="eyebrow">LINE Assistant</p><h1>${
+          esc(record.title || "V2 記錄明細")
+        }</h1></div><span class="status ${statusClass}">${
+          esc(data.status || "unknown")
+        }</span></header>
+        ${data.error ? `<section class="notice bad">${esc(data.error)}</section>` : ""}
+        <section class="panel">
+          <div class="kv">
+            <span>類型</span><strong>${esc(record.type || data.intent || "-")}</strong>
+            <span>建立時間</span><strong>${esc(data.createdAtText || "-")}</strong>
+            <span>處理時間</span><strong>${
+          data.processingMs ? `${data.processingMs} ms` : "-"
+        }</strong>
+            <span>追蹤</span><strong>${record.needsFollowup ? "需要" : "不需要"}</strong>
+          </div>
+          ${record.summary ? `<p class="summary">${esc(record.summary)}</p>` : ""}
+          ${record.nextStep ? `<p class="next">下一步：${esc(record.nextStep)}</p>` : ""}
+          <div class="actions">${link("開啟 Notion 記錄", record.url, "primary")}${
+          data.recordId
+            ? `<button type="button" data-copy="${esc(data.recordId)}">複製記錄 ID</button>`
+            : ""
+        }</div>
+        </section>
+        <section class="grid">
+          ${recordSection("對象", data.objects)}
+          ${recordSection("資源", data.resources)}
+          ${recordSection("指標 / 任務", data.indicators)}
+          ${recordSection("期程 / 行事曆", data.schedules, true)}
+        </section>
+        <section class="panel"><h2>原始訊息</h2><pre>${esc(data.rawText || "")}</pre></section>`;
+      }
+
+      function recordSection(title, items = [], includeGcal = false) {
+        return `<section class="panel"><h2>${
+          esc(title)
+        } <span>${items.length}</span></h2><ul class="items">${
+          items.length
+            ? items.map((item) => `
+          <li><div><strong>${esc(item.title || "未命名")}</strong>${
+              item.date ? `<small>${esc(fmt(item.date))}</small>` : ""
+            }</div><div class="row-actions"><span class="pill ${item.created ? "new" : ""}">${
+              item.created ? "新增" : "重用"
+            }</span>${link("Notion", item.url)}${
+              includeGcal ? link("GCal", item.gcalUrl) : ""
+            }</div></li>`).join("")
+            : `<li class="empty">沒有建立或關聯</li>`
+        }</ul></section>`;
+      }
+
+      document.addEventListener("click", async (event) => {
+        const button = event.target.closest("button[data-copy]");
+        if (!button) return;
+        await navigator.clipboard.writeText(button.dataset.copy);
+        button.textContent = "已複製";
+      });
+
+      (async () => {
+        try {
+          await initLiff();
+          const mode = params.get("mode") || (params.has("date") ? "briefing" : "record");
+          if (mode === "briefing") {
+            const apiBase = params.get("api");
+            if (!apiBase) throw new Error("缺少 briefing API URL。");
+            const res = await fetch(apiUrlWithParams(apiBase, ["date"]), {
+              headers: { accept: "application/json" },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
+            renderBriefing(data);
+            return;
+          }
+
+          const apiBase = params.get("api") ||
+            `${location.origin}/functions/v1/line-webhook/liff/record.json`;
+          const apiUrl = apiUrlWithParams(apiBase, ["log", "record", "liffId"]);
+          const res = await fetch(apiUrl, { headers: { accept: "application/json" } });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
+          renderRecord(data);
+        } catch (error) {
+          app.innerHTML = `<section class="panel"><h1>讀取失敗</h1><p>${
+            esc(error.message || error)
+          }</p></section>`;
+        }
+      })();
+    </script>
+  </body>
 </html>
