@@ -611,6 +611,87 @@
           border-radius: 10px 10px 0 0;
         }
       }
+      /* quick capture */
+      .kind-grid {
+        border: 0;
+        padding: 0;
+        margin: 0 0 6px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .kind-grid legend {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .kind-option {
+        display: grid;
+        gap: 2px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .kind-option:has(input:checked) {
+        border-color: var(--line);
+        background: var(--soft);
+      }
+      .kind-option input {
+        display: none;
+      }
+      .kind-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .kind-hint {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      @media (min-width: 560px) {
+        .kind-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      /* inbox */
+      .inbox-items {
+        display: grid;
+        gap: 8px;
+      }
+      .inbox-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .inbox-body {
+        flex: 1;
+        min-width: 0;
+        display: grid;
+        gap: 4px;
+      }
+      .inbox-head {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .inbox-head strong {
+        overflow-wrap: anywhere;
+      }
+      .inbox-summary {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .inbox-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
     </style>
   </head>
   <body>
@@ -921,6 +1002,451 @@
         await navigator.clipboard.writeText(button.dataset.copy);
         button.textContent = "已複製";
       });
+
+      // -------------------------------------------------------------
+      // Inbox workboard (mode=inbox)
+      // -------------------------------------------------------------
+      const renderInbox = (data, config) => {
+        document.title = "收件匣";
+        document.body.classList.remove("has-sticky");
+        const counts = data.counts || {};
+        const errors = (data.errors || []).filter(Boolean);
+        const rows = data.rows || [];
+
+        app.innerHTML = `
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">LINE Assistant V3</p>
+              <h1>收件匣</h1>
+              <p>未確認草稿 ${counts.drafts || 0} · 未整理備忘 ${counts.memos || 0}</p>
+            </div>
+            <nav>
+              <a href="${inboxHref()}" class="primary">重新整理</a>
+            </nav>
+          </header>
+          ${
+            errors.length
+              ? `<section class="notice warn">${errors.map(esc).join("<br>")}</section>`
+              : ""
+          }
+          <section class="panel">
+            <div class="section-heading">
+              <h2>未處理項目 <span>${rows.length}</span></h2>
+            </div>
+            ${
+              rows.length
+                ? `<ul class="items inbox-items">${
+                    rows.map((row) => inboxRow(row, config)).join("")
+                  }</ul>`
+                : `<p class="empty">收件匣是乾淨的 ✓</p>`
+            }
+          </section>`;
+      };
+
+      const inboxRow = (row, config) => {
+        const meta = [
+          row.intent,
+          row.candidateCount != null ? `候選 ${row.candidateCount}` : "",
+          row.createdAt ? fmt(row.createdAt) : "",
+        ].filter(Boolean).join(" · ");
+        const summary = row.summary || row.title;
+        const editUrl = row.source === "draft" && row.draftId && row.liffToken && config.draftBase
+          ? buildInboxDraftEditUrl(config, row.draftId, row.liffToken)
+          : null;
+        const sourceTag = row.source === "draft"
+          ? `<span class="pill warn">草稿</span>`
+          : `<span class="pill">${esc(row.intent || "備忘")}</span>`;
+
+        return `
+          <li class="inbox-item">
+            <div class="inbox-body">
+              <div class="inbox-head">
+                ${sourceTag}
+                <strong>${esc(row.title)}</strong>
+              </div>
+              <small>${esc(meta)}</small>
+              ${summary !== row.title ? `<p class="inbox-summary">${esc(summary)}</p>` : ""}
+            </div>
+            <div class="row-actions inbox-actions">
+              ${
+                row.source === "draft"
+                  ? `
+                ${
+                    editUrl
+                      ? `<a href="${attr(editUrl)}" class="mini-button">編輯</a>`
+                      : ""
+                  }
+                <button type="button" class="mini-button" data-inbox-action="commit_draft" data-draft-id="${
+                    attr(row.draftId)
+                  }">立即建檔</button>
+                <button type="button" class="mini-button" data-inbox-action="cancel_draft" data-draft-id="${
+                    attr(row.draftId)
+                  }">取消草稿</button>`
+                  : `
+                ${
+                    row.url
+                      ? `<a href="${attr(row.url)}" target="_blank" rel="noreferrer" class="mini-button">Notion</a>`
+                      : ""
+                  }
+                <button type="button" class="mini-button" data-inbox-action="process_memo" data-memo-id="${
+                    attr(row.id)
+                  }">標已整理</button>
+                <button type="button" class="mini-button" data-inbox-action="archive_memo" data-memo-id="${
+                    attr(row.id)
+                  }">封存</button>`
+              }
+            </div>
+          </li>`;
+      };
+
+      const inboxHref = () => {
+        const next = new URL(location.href);
+        next.searchParams.set("mode", "inbox");
+        next.searchParams.set("_", Date.now());
+        return next.toString();
+      };
+
+      const buildInboxDraftEditUrl = (config, draftId, liffToken) => {
+        if (!config.draftBase) return null;
+        try {
+          const url = new URL(config.draftBase);
+          url.searchParams.set("mode", "draft");
+          url.searchParams.set("draft", draftId);
+          url.searchParams.set("token", liffToken);
+          if (params.get("liffId")) url.searchParams.set("liffId", params.get("liffId"));
+          if (config.draftApi) url.searchParams.set("api", config.draftApi);
+          // searchApi/saveApi 由 Supabase 端 redirect 補, 這裡保留最少必要參數
+          return url.toString();
+        } catch {
+          return null;
+        }
+      };
+
+      const bindInboxActions = (config) => {
+        document.addEventListener("click", async (event) => {
+          const button = event.target.closest("[data-inbox-action]");
+          if (!button) return;
+          const action = button.dataset.inboxAction;
+          if (!action) return;
+          if (!config.actionApi) {
+            toast("缺少 actionApi");
+            return;
+          }
+          if (action === "cancel_draft") {
+            if (!window.confirm("確定要取消這份草稿?")) return;
+          }
+          const body = { action };
+          if (button.dataset.draftId) body.draftId = button.dataset.draftId;
+          if (button.dataset.memoId) body.memoPageId = button.dataset.memoId;
+          button.disabled = true;
+          try {
+            const res = await fetch(config.actionApi, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.message || data.error || "動作失敗");
+            toast(data.message || "已更新");
+            setTimeout(() => location.reload(), 700);
+          } catch (error) {
+            toast(error.message || String(error));
+            button.disabled = false;
+          }
+        });
+      };
+
+      // -------------------------------------------------------------
+      // Quick capture (mode=quick-capture)
+      // -------------------------------------------------------------
+      const QUICK_CAPTURE_KINDS = [
+        ["memo", "備忘 / Inbox", "想到什麼先記下來"],
+        ["knowledge", "知識 / 學習", "整理參考資料"],
+        ["task", "任務 / 待辦", "有要做的事"],
+        ["schedule", "期程 / 提醒", "有時間的行程"],
+        ["record", "聯繫 / 記錄", "已經發生過的事"],
+        ["resource", "資源", "店家、餐食、場地"],
+        ["person", "人員", "聯絡人"],
+        ["organization", "單位", "公司、機構、店家"],
+      ];
+
+      const renderQuickCapture = (config) => {
+        document.title = "快速補登";
+        document.body.classList.remove("has-sticky");
+        const kindOptions = QUICK_CAPTURE_KINDS.map(([key, label, hint]) =>
+          `<label class="kind-option" data-kind-option><input type="radio" name="kind" value="${
+            attr(key)
+          }" ${key === "memo" ? "checked" : ""}><span class="kind-label">${
+            esc(label)
+          }</span><span class="kind-hint">${esc(hint)}</span></label>`
+        ).join("");
+
+        app.innerHTML = `
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">LINE Assistant V3</p>
+              <h1>快速補登</h1>
+              <p>先進草稿,確認後才寫入 Notion。</p>
+            </div>
+          </header>
+          <section class="panel">
+            <form id="quick-capture-form">
+              <fieldset class="kind-grid">
+                <legend>類型</legend>
+                ${kindOptions}
+              </fieldset>
+              <label><span>標題（必填）</span><input name="title" autocomplete="off" required maxlength="160" placeholder="例如:童麗華電話 / 5/6 試喝會 / 多代理工具研究"></label>
+              <label><span>內容</span><textarea name="content" rows="5" placeholder="可以寫描述、地址、電話、備註"></textarea></label>
+              <div class="field-row" data-quick-time-row hidden>
+                <label><span>開始時間</span><input name="start" type="datetime-local"></label>
+                <label><span>結束時間</span><input name="end" type="datetime-local"></label>
+              </div>
+              <label class="checkline" data-quick-gcal-row hidden>
+                <input name="syncGoogleCalendar" type="checkbox">
+                <span>確認後同步 Google Calendar</span>
+              </label>
+              <label data-quick-priority-row hidden>
+                <span>重要程度</span>
+                <select name="priority">
+                  <option value="">未指定</option>
+                  <option value="高">高</option>
+                  <option value="中">中</option>
+                  <option value="低">低</option>
+                </select>
+              </label>
+              <div class="form-actions">
+                <button class="primary" type="submit">建立草稿</button>
+                <p id="quick-capture-result" role="status"></p>
+              </div>
+            </form>
+          </section>`;
+
+        bindQuickCaptureForm(config);
+      };
+
+      const bindQuickCaptureForm = (config) => {
+        const form = document.querySelector("#quick-capture-form");
+        const result = document.querySelector("#quick-capture-result");
+        if (!form) return;
+
+        const updateContextual = () => {
+          const kind = form.querySelector('input[name="kind"]:checked')?.value || "memo";
+          const showTime = kind === "schedule" || kind === "record" || kind === "task";
+          const showGcal = kind === "schedule";
+          const showPriority = kind === "task";
+          const setHidden = (selector, hidden) => {
+            const el = form.querySelector(selector);
+            if (!el) return;
+            el.hidden = hidden;
+          };
+          setHidden('[data-quick-time-row]', !showTime);
+          setHidden('[data-quick-gcal-row]', !showGcal);
+          setHidden('[data-quick-priority-row]', !showPriority);
+        };
+        updateContextual();
+        form.addEventListener("change", (event) => {
+          if (event.target.matches('input[name="kind"]')) updateContextual();
+        });
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!config.saveApi) {
+            result.textContent = "缺少 saveApi,無法送出";
+            return;
+          }
+          const submit = form.querySelector("button[type='submit']");
+          const formData = new FormData(form);
+          const payload = {
+            kind: String(formData.get("kind") || "memo"),
+            title: String(formData.get("title") || "").trim(),
+            content: String(formData.get("content") || "").trim(),
+            start: normalizeLocalDateTime(String(formData.get("start") || "")),
+            end: normalizeLocalDateTime(String(formData.get("end") || "")),
+            priority: String(formData.get("priority") || "") || undefined,
+            syncGoogleCalendar: formData.get("syncGoogleCalendar") === "on",
+          };
+          if (!payload.title) {
+            result.textContent = "請先輸入標題。";
+            return;
+          }
+          submit.disabled = true;
+          result.textContent = "建立草稿中…";
+          try {
+            const res = await fetch(config.saveApi, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.message || data.error || "建立失敗");
+            result.innerHTML = `${
+              esc(data.message || "草稿已建立")
+            } ${
+              data.editUrl
+                ? `<a href="${attr(data.editUrl)}">開啟草稿編輯 →</a>`
+                : ""
+            }`;
+            // Auto-jump to draft editor for relation editing
+            if (data.editUrl) setTimeout(() => location.href = data.editUrl, 800);
+          } catch (error) {
+            result.textContent = error.message || String(error);
+          } finally {
+            submit.disabled = false;
+          }
+        });
+      };
+
+      // -------------------------------------------------------------
+      // Task workboard (mode=task)
+      // -------------------------------------------------------------
+      const TASK_BUCKETS = [
+        { key: "overdue", label: "逾期", tone: "bad" },
+        { key: "today", label: "今日", tone: "ok" },
+        { key: "tomorrow", label: "明日", tone: "warn" },
+        { key: "undated", label: "未排期", tone: "muted" },
+        { key: "inProgress", label: "進行中", tone: "muted" },
+      ];
+
+      const renderTasks = (data, config) => {
+        document.title = "待辦工作台";
+        document.body.classList.remove("has-sticky");
+        const counts = data.counts || {};
+        const buckets = data.buckets || {};
+        const total = TASK_BUCKETS.reduce((sum, b) => sum + (counts[b.key] || 0), 0);
+        const errors = (data.errors || []).filter(Boolean);
+
+        app.innerHTML = `
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">LINE Assistant V3</p>
+              <h1>待辦工作台</h1>
+              <p>共 ${total} 筆未完成 · ${esc(fmt(data.generatedAt))}</p>
+            </div>
+            <nav>
+              <a href="${tasksHref()}" class="primary">重新整理</a>
+            </nav>
+          </header>
+          ${
+            errors.length
+              ? `<section class="notice warn">${errors.map(esc).join("<br>")}</section>`
+              : ""
+          }
+          <section class="summary-grid">
+            ${TASK_BUCKETS.map((b) => taskMetric(b, counts[b.key] || 0)).join("")}
+          </section>
+          <section class="grid">
+            ${
+              TASK_BUCKETS.map((b) => taskBucketSection(b, buckets[b.key] || [], config)).join("")
+            }
+          </section>`;
+      };
+
+      const taskMetric = (bucket, count) =>
+        `<article class="metric"><span>${esc(bucket.label)}</span><strong>${count}</strong></article>`;
+
+      const taskBucketSection = (bucket, items, config) => {
+        const rows = items.length
+          ? items.map((task) => taskRow(task, bucket, config)).join("")
+          : `<li class="empty">${esc(emptyHintFor(bucket.key))}</li>`;
+        return `<section class="panel"><h2>${esc(bucket.label)} <span>${items.length}</span></h2><ul class="items">${rows}</ul></section>`;
+      };
+
+      const taskRow = (task, bucket, _config) => {
+        const due = task.due ? fmtDateOnly(task.due) : "";
+        const dueClass = bucket.key === "overdue" ? "bad" : bucket.key === "today" ? "ok" : "";
+        const meta = [task.type, task.status, due, task.meta].filter(Boolean).join(" · ");
+        return `
+          <li data-task-id="${attr(task.id)}">
+            <div>
+              <strong>${esc(task.title || "未命名任務")}</strong>
+              <small>${esc(meta)}</small>
+            </div>
+            <div class="row-actions">
+              <button type="button" class="mini-button" data-task-action="complete" data-task-id="${
+                attr(task.id)
+              }">完成</button>
+              <button type="button" class="mini-button" data-task-action="postpone" data-task-id="${
+                attr(task.id)
+              }" data-postpone-to="tomorrow">明日</button>
+              <button type="button" class="mini-button" data-task-action="postpone" data-task-id="${
+                attr(task.id)
+              }" data-postpone-to="next_week">下週</button>
+              <button type="button" class="mini-button" data-task-action="set_due" data-task-id="${
+                attr(task.id)
+              }">設日期</button>
+              ${
+                task.url
+                  ? `<a href="${attr(task.url)}" target="_blank" rel="noreferrer">Notion</a>`
+                  : ""
+              }
+              ${dueClass ? `<span class="pill ${dueClass}">${esc(due)}</span>` : ""}
+            </div>
+          </li>`;
+      };
+
+      const emptyHintFor = (key) =>
+        ({
+          overdue: "沒有逾期任務 ✓",
+          today: "今日沒有截止任務",
+          tomorrow: "明日沒有截止任務",
+          undated: "沒有未排期任務",
+          inProgress: "沒有其他進行中任務",
+        })[key] || "—";
+
+      const tasksHref = () => {
+        const next = new URL(location.href);
+        next.searchParams.set("mode", "task");
+        next.searchParams.set("_", Date.now());
+        return next.toString();
+      };
+
+      const fmtDateOnly = (value) => {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return new Intl.DateTimeFormat("zh-TW", {
+          timeZone: "Asia/Taipei",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(date);
+      };
+
+      const bindTaskActions = (config) => {
+        document.addEventListener("click", async (event) => {
+          const button = event.target.closest("[data-task-action]");
+          if (!button) return;
+          const action = button.dataset.taskAction;
+          const taskId = button.dataset.taskId;
+          if (!action || !taskId) return;
+          if (!config.actionApi) {
+            toast("缺少 actionApi，無法執行動作");
+            return;
+          }
+          const body = { action, taskId };
+          if (action === "postpone") body.postponeTo = button.dataset.postponeTo;
+          if (action === "set_due") {
+            const input = window.prompt("輸入截止日 YYYY-MM-DD（留空取消）", "");
+            if (!input) return;
+            body.due = input.trim();
+          }
+          button.disabled = true;
+          try {
+            const res = await fetch(config.actionApi, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.message || data.error || "動作失敗");
+            toast(data.message || "已更新");
+            // refresh after action
+            setTimeout(() => location.reload(), 600);
+          } catch (error) {
+            toast(error.message || String(error));
+            button.disabled = false;
+          }
+        });
+      };
 
       // -------------------------------------------------------------
       // Draft mode (mode=draft)
@@ -1943,6 +2469,38 @@
           await initLiff();
           const mode = params.get("mode") ||
             (params.has("draft") ? "draft" : params.has("date") ? "briefing" : "record");
+          if (mode === "task") {
+            const apiBase = params.get("api");
+            if (!apiBase) throw new Error("缺少 task API URL。");
+            const res = await fetch(apiBase, { headers: { accept: "application/json" } });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
+            const config = { actionApi: params.get("actionApi") };
+            renderTasks(data, config);
+            bindTaskActions(config);
+            return;
+          }
+          if (mode === "quick-capture") {
+            const config = { saveApi: params.get("saveApi") };
+            if (!config.saveApi) throw new Error("缺少 saveApi 參數。");
+            renderQuickCapture(config);
+            return;
+          }
+          if (mode === "inbox") {
+            const apiBase = params.get("api");
+            if (!apiBase) throw new Error("缺少 inbox API URL。");
+            const res = await fetch(apiBase, { headers: { accept: "application/json" } });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
+            const config = {
+              actionApi: params.get("actionApi"),
+              draftBase: params.get("draftBase"),
+              draftApi: params.get("draftApi"),
+            };
+            renderInbox(data, config);
+            bindInboxActions(config);
+            return;
+          }
           if (mode === "briefing") {
             const apiBase = params.get("api");
             if (!apiBase) throw new Error("缺少 briefing API URL。");
