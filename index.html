@@ -335,10 +335,288 @@
           grid-template-columns: 1fr 1fr;
         }
       }
+      /* draft editor */
+      body.has-sticky main {
+        padding-bottom: 96px;
+      }
+      .hint, small.hint {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .edit-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+      }
+      .entity-list, .relation-list {
+        display: grid;
+        gap: 10px;
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .section-head h2 {
+        margin: 0;
+        flex: 1;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .confidence {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        color: #36505f;
+        background: #e8eef2;
+      }
+      .status.draft, .status.editing, .status.awaiting_confirmation {
+        color: #8a5a00;
+        background: #fff3cf;
+      }
+      .status.confirmed, .status.committed {
+        color: #087a34;
+        background: #dcf8e6;
+      }
+      .status.cancelled, .status.failed {
+        color: #9d1c1c;
+        background: #ffe0e0;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+      .field span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+      }
+      .lookup-box {
+        padding: 10px;
+        border: 1px dashed var(--border);
+        border-radius: 7px;
+        background: #fbfcfd;
+        display: grid;
+        gap: 8px;
+      }
+      .lookup-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+      }
+      .lookup-results {
+        display: grid;
+        gap: 7px;
+      }
+      .lookup-result {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+        padding: 9px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        text-align: left;
+        cursor: pointer;
+      }
+      .lookup-result strong {
+        display: block;
+      }
+      .lookup-result span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .structured-fields {
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fbfcfd;
+      }
+      .structured-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .structured-head span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .structured-hidden {
+        display: none;
+      }
+      .checkbox-field {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 9px;
+        min-height: 42px;
+      }
+      .checkbox-field input {
+        width: auto;
+        min-height: auto;
+      }
+      .relation-map {
+        display: grid;
+        gap: 8px;
+      }
+      .relation-map:empty {
+        display: none;
+      }
+      .relation-edge, .relation-suggestion {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto;
+        gap: 8px;
+        align-items: center;
+        padding: 9px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fbfcfd;
+      }
+      .relation-edge strong, .relation-suggestion strong {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      .relation-chip {
+        justify-self: center;
+        color: #345;
+        background: #e8eef2;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .relation-suggestion {
+        border-style: dashed;
+        background: #fffef8;
+      }
+      .relation-suggestion button {
+        padding: 6px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .registry-match {
+        display: grid;
+        gap: 3px;
+        padding: 10px;
+        border: 1px solid #b8dfc4;
+        border-radius: 7px;
+        background: #f2fbf5;
+      }
+      .registry-match span {
+        color: #126b2f;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .registry-match strong {
+        color: var(--ink);
+      }
+      .registry-match small {
+        color: var(--muted);
+      }
+      .mini-button {
+        min-height: 34px;
+        padding: 6px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      button.danger, a.danger {
+        background: #fff5f5;
+        border-color: #f2b8b5;
+        color: #b3261e;
+      }
+      .sticky-actions {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 10px max(14px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
+        background: rgba(244, 247, 248, 0.94);
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        z-index: 20;
+      }
+      #toast {
+        position: fixed;
+        left: 14px;
+        right: 14px;
+        bottom: 76px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #172026;
+        color: white;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: 0.2s ease;
+        pointer-events: none;
+        z-index: 30;
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .attachments {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 9px;
+      }
+      .attachments li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+      }
+      @media (min-width: 720px) {
+        .form-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .sticky-actions {
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(820px, 100%);
+          border: 1px solid var(--border);
+          border-bottom: 0;
+          border-radius: 10px 10px 0 0;
+        }
+      }
     </style>
   </head>
   <body>
     <main id="app"><section class="panel">讀取中...</section></main>
+    <div id="toast" role="status"></div>
+    <datalist id="relation-suggestions"></datalist>
     <script>
       const app = document.getElementById("app");
       const params = new URLSearchParams(location.search);
@@ -644,10 +922,1027 @@
         button.textContent = "已複製";
       });
 
+      // -------------------------------------------------------------
+      // Draft mode (mode=draft)
+      // -------------------------------------------------------------
+      const DRAFT = {
+        intents: [
+          ["v3_draft", "系統判斷"],
+          ["memo", "只存備忘"],
+          ["record", "聯繫 / 記錄"],
+          ["schedule", "期程 / 提醒"],
+          ["task", "任務 / 進度"],
+          ["knowledge", "知識"],
+          ["resource", "資源"],
+          ["project", "專案"],
+          ["case", "個案"],
+        ],
+        entityTypes: [
+          ["person", "人員"],
+          ["organization", "單位"],
+          ["resource", "資源"],
+          ["case", "個案"],
+          ["project", "專案"],
+          ["task", "任務"],
+          ["indicator", "指標"],
+          ["record", "記錄"],
+          ["schedule", "期程"],
+          ["knowledge", "知識"],
+          ["memo", "備忘"],
+          ["attachment", "附件"],
+          ["location", "地點"],
+          ["unknown", "待判定"],
+        ],
+        actions: [
+          ["needs_review", "待確認"],
+          ["create", "新建"],
+          ["reuse", "沿用"],
+          ["update", "更新"],
+          ["merge", "合併"],
+          ["ignore", "忽略"],
+        ],
+        directions: [
+          ["forward", "正向"],
+          ["reverse", "反向"],
+          ["bidirectional", "雙向"],
+        ],
+        relationTypes: [
+          "所屬單位",
+          "聯絡人",
+          "主要窗口",
+          "提供資源",
+          "適用專案",
+          "相關人員",
+          "相關單位",
+          "相關資源",
+          "相關個案",
+          "相關專案",
+          "相關任務",
+          "相關紀錄",
+          "相關期程",
+          "推動指標",
+          "截止日",
+          "來源備忘",
+          "附件",
+        ],
+        structuredCaptions: {
+          person: "人員表單",
+          organization: "單位表單",
+          resource: "資源表單",
+          case: "個案表單",
+          project: "專案表單",
+          task: "任務表單",
+          indicator: "指標表單",
+          record: "紀錄表單",
+          schedule: "期程表單",
+          knowledge: "知識表單",
+          memo: "備忘表單",
+          attachment: "附件表單",
+        },
+      };
+      let newEntitySeq = 0;
+      let newRelationSeq = 0;
+
+      const toast = (message) => {
+        const el = document.getElementById("toast");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), 2200);
+      };
+
+      const draftStatusClass = (status) => String(status || "").replace(/[^a-z_]/g, "");
+
+      const optionList = (items, current = "") =>
+        items.map(([key, label]) =>
+          `<option value="${attr(key)}"${
+            key === current ? " selected" : ""
+          }>${esc(label)}</option>`
+        ).join("");
+
+      const parseJsonField = (textarea) => {
+        if (!textarea) return {};
+        const value = (textarea.value || "").trim();
+        if (!value) return {};
+        try {
+          const parsed = JSON.parse(value);
+          return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+        } catch {
+          return {};
+        }
+      };
+
+      const safeText = (value, max) => {
+        if (typeof value === "string") return value.trim().slice(0, max);
+        if (typeof value === "number" || typeof value === "boolean") {
+          return String(value).slice(0, max);
+        }
+        if (Array.isArray(value)) {
+          return value.map((item) => String(item).trim()).filter(Boolean).join(", ").slice(0, max);
+        }
+        return "";
+      };
+
+      const booleanField = (value) => {
+        if (typeof value === "boolean") return value;
+        if (typeof value === "number") return value !== 0;
+        if (typeof value === "string") {
+          return ["true", "1", "yes", "y", "on", "是", "同步"].includes(value.trim().toLowerCase());
+        }
+        return false;
+      };
+
+      const structuredInput = (key, label, value, type = "text", types = ["all"]) => `
+        <label class="field" data-structured-types="${attr(types.join(","))}">
+          <span>${esc(label)}</span>
+          <input type="${attr(type)}" data-structured-field="${attr(key)}" value="${
+        attr(safeText(value, 300))
+      }">
+        </label>`;
+
+      const renderStructuredFields = (fields, entityType) => {
+        const f = fields || {};
+        return `
+        <div class="structured-fields" data-structured-root data-active-entity-type="${
+          attr(entityType)
+        }">
+          <div class="structured-head">
+            <strong>常用欄位</strong>
+            <span data-structured-caption>${
+          esc(DRAFT.structuredCaptions[entityType] || "自動寫回 JSON")
+        }</span>
+          </div>
+          <div class="form-grid">
+            ${structuredInput("type", "類型 / 分類", f.type, "text", ["all"])}
+            ${structuredInput("status", "狀態", f.status, "text", ["all"])}
+            ${
+          structuredInput("phone", "電話", f.phone, "tel", ["person", "organization", "resource"])
+        }
+            ${structuredInput("email", "Email", f.email, "email", ["person", "organization"])}
+            ${
+          structuredInput("line", "LINE / 社群", f.line || f.social, "text", ["person"])
+        }
+            ${
+          structuredInput("address", "地址", f.address, "text", [
+            "person",
+            "organization",
+            "resource",
+            "schedule",
+          ])
+        }
+            ${
+          structuredInput(
+            "url",
+            "網址 / 來源 URL",
+            f.url || f.website || f.sourceUrl,
+            "url",
+            ["organization", "resource", "knowledge", "attachment"],
+          )
+        }
+            ${
+          structuredInput(
+            "googleMapsUrl",
+            "Google Maps URL",
+            f.googleMapsUrl || f.mapsUrl,
+            "url",
+            ["organization"],
+          )
+        }
+            ${structuredInput("hours", "營業時間", f.hours, "text", ["organization"])}
+            ${
+          structuredInput(
+            "content",
+            "服務內容",
+            f.content || f.description || f.service,
+            "text",
+            ["resource"],
+          )
+        }
+            ${structuredInput("limitation", "使用限制", f.limitation, "text", ["resource"])}
+            ${structuredInput("review", "評價 / 使用心得", f.review, "text", ["resource"])}
+            ${structuredInput("contexts", "適用情境", f.contexts, "text", ["resource"])}
+            ${structuredInput("startDate", "開始日期", f.startDate, "text", ["project"])}
+            ${structuredInput("endDate", "結束日期", f.endDate, "text", ["project"])}
+            ${
+          structuredInput(
+            "priority",
+            "優先度 / 重要程度",
+            f.priority,
+            "text",
+            ["task", "schedule"],
+          )
+        }
+            ${structuredInput("doneWhen", "完成條件", f.doneWhen, "text", ["task", "indicator"])}
+            ${
+          structuredInput("nextStep", "下一步", f.nextStep, "text", [
+            "case",
+            "project",
+            "task",
+            "indicator",
+            "record",
+          ])
+        }
+            ${
+          structuredInput("progress", "完成度", f.progress, "number", [
+            "project",
+            "task",
+            "indicator",
+          ])
+        }
+            ${structuredInput("target", "目標值", f.target, "number", ["indicator"])}
+            ${structuredInput("current", "目前值", f.current, "number", ["indicator"])}
+            ${structuredInput("unit", "單位", f.unit, "text", ["indicator"])}
+            ${structuredInput("blocker", "問題 / 阻礙", f.blocker, "text", ["indicator"])}
+            ${
+          structuredInput("summary", "摘要", f.summary, "text", [
+            "case",
+            "project",
+            "record",
+            "knowledge",
+            "attachment",
+          ])
+        }
+            ${structuredInput("risk", "風險 / 注意事項", f.risk, "text", ["case"])}
+            ${structuredInput("date", "紀錄時間", f.date || f.time, "text", ["record"])}
+            ${
+          structuredInput("start", "開始 / 日期", f.start || f.date, "text", ["schedule"])
+        }
+            ${structuredInput("end", "結束", f.end, "text", ["schedule"])}
+            ${structuredInput("location", "地點", f.location, "text", ["schedule"])}
+            ${structuredInput("domains", "領域", f.domains, "text", ["knowledge"])}
+            ${structuredInput("tags", "標籤", f.tags, "text", ["knowledge"])}
+            ${structuredInput("ocrText", "解析文字", f.ocrText, "text", ["attachment"])}
+            <label class="field checkbox-field" data-structured-types="schedule">
+              <input type="checkbox" data-structured-field="syncGoogleCalendar"${
+          booleanField(f.syncGoogleCalendar || f.sync_gcal) ? " checked" : ""
+        }>
+              <span>同步 Google Calendar</span>
+            </label>
+            <label class="field checkbox-field" data-structured-types="record">
+              <input type="checkbox" data-structured-field="needsFollowup"${
+          booleanField(f.needsFollowup) ? " checked" : ""
+        }>
+              <span>需要追蹤</span>
+            </label>
+          </div>
+          <label class="field" data-structured-types="all">
+            <span>備註</span>
+            <textarea data-structured-field="note" rows="2">${
+          esc(safeText(f.note, 600))
+        }</textarea>
+          </label>
+        </div>`;
+      };
+
+      const renderRegistryMatchHtml = (match) => {
+        const m = match || {};
+        if (!m.canonicalName) return `<div data-registry-match></div>`;
+        const meta = [m.kind, m.organization, m.phone, m.address].filter(Boolean).join(" / ");
+        return `
+          <div class="registry-match" data-registry-match>
+            <span>可能沿用</span>
+            <strong>${esc(m.canonicalName)}</strong>
+            ${meta ? `<small>${esc(meta)}</small>` : ""}
+          </div>`;
+      };
+
+      const renderRegistryMatchSummary = (fields) => {
+        const f = fields || {};
+        const match = f.registryMatch && typeof f.registryMatch === "object" ? f.registryMatch : null;
+        return renderRegistryMatchHtml(match);
+      };
+
+      const renderRegistryLookup = (query) => `
+        <div class="lookup-box">
+          <div class="lookup-row">
+            <input data-field="lookup_query" value="${
+        attr(query || "")
+      }" placeholder="搜尋既有人員 / 單位 / 資源">
+            <button type="button" class="mini-button" data-lookup>搜尋既有</button>
+          </div>
+          <div class="lookup-results" data-lookup-results></div>
+        </div>`;
+
+      const renderEntityCard = (entity) => {
+        const fields = entity.fields || {};
+        const fieldsText = JSON.stringify(fields, null, 2);
+        return `
+          <article class="edit-card" data-entity-id="${attr(entity.id)}">
+            <div class="card-head">
+              <strong>${esc(entity.displayName || "未命名候選")}</strong>
+              <span class="confidence">${esc(entity.confidenceText || "")}</span>
+            </div>
+            ${renderRegistryMatchSummary(fields)}
+            ${renderStructuredFields(fields, entity.entityType)}
+            <div class="form-grid">
+              <label class="field">
+                <span>類型</span>
+                <select data-field="entity_type">${
+          optionList(DRAFT.entityTypes, entity.entityType || "unknown")
+        }</select>
+              </label>
+              <label class="field">
+                <span>動作</span>
+                <select data-field="action">${
+          optionList(DRAFT.actions, entity.action || "needs_review")
+        }</select>
+              </label>
+              <label class="field">
+                <span>顯示名稱</span>
+                <input data-field="display_name" value="${attr(entity.displayName || "")}">
+              </label>
+              <label class="field">
+                <span>標準名稱</span>
+                <input data-field="canonical_name" value="${attr(entity.canonicalName || "")}">
+              </label>
+              <label class="field">
+                <span>既有 Notion Page ID</span>
+                <input data-field="existing_notion_page_id" value="${
+          attr(entity.existingNotionPageId || "")
+        }" placeholder="沿用 / 合併時填入">
+              </label>
+              <label class="field">
+                <span>既有 Notion URL</span>
+                <input data-field="existing_notion_url" value="${
+          attr(entity.existingNotionUrl || "")
+        }">
+              </label>
+            </div>
+            <label class="field">
+              <span>欄位 JSON</span>
+              <textarea data-field="fields" rows="4">${esc(fieldsText)}</textarea>
+            </label>
+            ${renderRegistryLookup(entity.displayName || entity.canonicalName || "")}
+          </article>`;
+      };
+
+      const renderRelationCard = (relation, entities) => {
+        const metadataText = JSON.stringify(relation.metadata || {}, null, 2);
+        return `
+          <article class="edit-card" data-relation-id="${attr(relation.id)}">
+            <div class="form-grid">
+              <label class="field">
+                <span>從</span>
+                <select data-field="from_entity_id">${
+          entityReferenceOptions(entities, relation.fromEntityId || "")
+        }</select>
+              </label>
+              <label class="field">
+                <span>到</span>
+                <select data-field="to_entity_id">${
+          entityReferenceOptions(entities, relation.toEntityId || "")
+        }</select>
+              </label>
+              <label class="field">
+                <span>關係</span>
+                <input data-field="relation_type" list="relation-suggestions" value="${
+          attr(relation.relationType || "")
+        }">
+              </label>
+              <label class="field">
+                <span>動作</span>
+                <select data-field="action">${
+          optionList(DRAFT.actions, relation.action || "needs_review")
+        }</select>
+              </label>
+              <label class="field">
+                <span>方向</span>
+                <select data-field="direction">${
+          optionList(DRAFT.directions, relation.direction || "forward")
+        }</select>
+              </label>
+            </div>
+            <label class="field">
+              <span>補充 JSON</span>
+              <textarea data-field="metadata" rows="3">${esc(metadataText)}</textarea>
+            </label>
+          </article>`;
+      };
+
+      const renderAttachmentRow = (attachment) => `
+        <li>
+          <div>
+            <strong>${esc(attachment.fileName || attachment.kind || "附件")}</strong>
+            <small>${esc(attachment.parseStatus || "")} / ${esc(attachment.status || "")}</small>
+          </div>
+          ${
+        attachment.externalUrl
+          ? `<a href="${attr(attachment.externalUrl)}" target="_blank" rel="noreferrer">開啟</a>`
+          : ""
+      }
+        </li>`;
+
+      const entityReferenceOptions = (entities, current) =>
+        (entities || []).map((entity) => {
+          const label = `${
+            entity.canonicalName || entity.displayName || "未命名候選"
+          } (${entity.entityType || "unknown"})`;
+          return `<option value="${attr(entity.id)}"${
+            entity.id === current ? " selected" : ""
+          }>${esc(label)}</option>`;
+        }).join("");
+
+      const entityLabelFromCard = (card) => {
+        const name = card.querySelector('[data-field="canonical_name"]')?.value ||
+          card.querySelector('[data-field="display_name"]')?.value ||
+          "未命名候選";
+        const type = card.querySelector('[data-field="entity_type"]')?.value || "unknown";
+        return `${name} (${type})`;
+      };
+
+      const entityNameFromCard = (card) =>
+        card.querySelector('[data-field="canonical_name"]')?.value ||
+        card.querySelector('[data-field="display_name"]')?.value ||
+        "未命名候選";
+
+      const entityTypeFromCard = (card) =>
+        card.querySelector('[data-field="entity_type"]')?.value || "unknown";
+
+      const liveEntityOptions = (current = "") =>
+        [...document.querySelectorAll("[data-entity-id]")].map((card) => {
+          const id = card.dataset.entityId;
+          return `<option value="${attr(id)}"${
+            id === current ? " selected" : ""
+          }>${esc(entityLabelFromCard(card))}</option>`;
+        }).join("");
+
+      const refreshRelationEntityOptions = () => {
+        document
+          .querySelectorAll(
+            '[data-relation-id] select[data-field="from_entity_id"], [data-relation-id] select[data-field="to_entity_id"]',
+          )
+          .forEach((select) => {
+            const current = select.value;
+            select.innerHTML = liveEntityOptions(current);
+          });
+        const entityCount = document.getElementById("entity-count");
+        const relationCount = document.getElementById("relation-count");
+        if (entityCount) {
+          entityCount.textContent = document.querySelectorAll("[data-entity-id]").length;
+        }
+        if (relationCount) {
+          relationCount.textContent = document.querySelectorAll("[data-relation-id]").length;
+        }
+        renderRelationMap();
+      };
+
+      const clearEmpty = (container) => {
+        if (!container) return;
+        container.querySelectorAll(".empty").forEach((node) => node.remove());
+      };
+
+      const newEntityCard = () => {
+        const id = `new-entity-${++newEntitySeq}`;
+        return `
+          <article class="edit-card" data-entity-id="${attr(id)}" data-new="true">
+            <div class="card-head">
+              <strong>新增候選</strong>
+              <span class="confidence">手動新增</span>
+            </div>
+            <div data-registry-match></div>
+            ${renderStructuredFields({}, "person")}
+            <div class="form-grid">
+              <label class="field"><span>類型</span><select data-field="entity_type">${
+          optionList(DRAFT.entityTypes, "person")
+        }</select></label>
+              <label class="field"><span>動作</span><select data-field="action">${
+          optionList(DRAFT.actions, "create")
+        }</select></label>
+              <label class="field"><span>顯示名稱</span><input data-field="display_name" value="" placeholder="例如：童麗華"></label>
+              <label class="field"><span>標準名稱</span><input data-field="canonical_name" value="" placeholder="正式名稱"></label>
+              <label class="field"><span>既有 Notion Page ID</span><input data-field="existing_notion_page_id" value="" placeholder="沿用 / 合併時填入"></label>
+              <label class="field"><span>既有 Notion URL</span><input data-field="existing_notion_url" value=""></label>
+            </div>
+            <label class="field"><span>欄位 JSON</span><textarea data-field="fields" rows="4">{}</textarea></label>
+            ${renderRegistryLookup("")}
+          </article>`;
+      };
+
+      const newRelationCard = () => {
+        const id = `new-relation-${++newRelationSeq}`;
+        return `
+          <article class="edit-card" data-relation-id="${attr(id)}" data-new="true">
+            <div class="form-grid">
+              <label class="field"><span>從</span><select data-field="from_entity_id">${
+          liveEntityOptions()
+        }</select></label>
+              <label class="field"><span>到</span><select data-field="to_entity_id">${
+          liveEntityOptions()
+        }</select></label>
+              <label class="field"><span>關係</span><input data-field="relation_type" list="relation-suggestions" value="相關人員"></label>
+              <label class="field"><span>動作</span><select data-field="action">${
+          optionList(DRAFT.actions, "create")
+        }</select></label>
+              <label class="field"><span>方向</span><select data-field="direction">${
+          optionList(DRAFT.directions, "forward")
+        }</select></label>
+            </div>
+            <label class="field"><span>補充 JSON</span><textarea data-field="metadata" rows="3">{}</textarea></label>
+          </article>`;
+      };
+
+      const relationCardFromSuggestion = (fromId, toId, relationType, direction = "forward") => {
+        const id = `new-relation-${++newRelationSeq}`;
+        return `
+          <article class="edit-card" data-relation-id="${attr(id)}" data-new="true">
+            <div class="form-grid">
+              <label class="field"><span>從</span><select data-field="from_entity_id">${
+          liveEntityOptions(fromId)
+        }</select></label>
+              <label class="field"><span>到</span><select data-field="to_entity_id">${
+          liveEntityOptions(toId)
+        }</select></label>
+              <label class="field"><span>關係</span><input data-field="relation_type" list="relation-suggestions" value="${
+          attr(relationType)
+        }"></label>
+              <label class="field"><span>動作</span><select data-field="action">${
+          optionList(DRAFT.actions, "create")
+        }</select></label>
+              <label class="field"><span>方向</span><select data-field="direction">${
+          optionList(DRAFT.directions, direction)
+        }</select></label>
+            </div>
+            <label class="field"><span>補充 JSON</span><textarea data-field="metadata" rows="3">{"source":"relation_map_suggestion"}</textarea></label>
+          </article>`;
+      };
+
+      const relationExists = (fromId, toId, relationType) =>
+        [...document.querySelectorAll("[data-relation-id]")].some((card) =>
+          card.querySelector('[data-field="from_entity_id"]')?.value === fromId &&
+          card.querySelector('[data-field="to_entity_id"]')?.value === toId &&
+          card.querySelector('[data-field="relation_type"]')?.value === relationType
+        );
+
+      const suggestRelations = () => {
+        const cards = [...document.querySelectorAll("[data-entity-id]")];
+        const byType = (type) => cards.filter((card) => entityTypeFromCard(card) === type);
+        const suggestions = [];
+        const add = (from, to, relationType) => {
+          if (!from || !to || from === to) return;
+          if (relationExists(from.dataset.entityId, to.dataset.entityId, relationType)) return;
+          suggestions.push({
+            fromId: from.dataset.entityId,
+            toId: to.dataset.entityId,
+            fromName: entityNameFromCard(from),
+            toName: entityNameFromCard(to),
+            relationType,
+          });
+        };
+        for (const person of byType("person")) {
+          for (const org of byType("organization")) add(person, org, "所屬單位");
+          for (const project of byType("project")) add(person, project, "相關專案");
+        }
+        for (const resource of byType("resource")) {
+          for (const org of byType("organization")) add(resource, org, "提供單位");
+          for (const project of byType("project")) add(resource, project, "相關專案");
+        }
+        for (const task of byType("task")) {
+          for (const project of byType("project")) add(task, project, "相關專案");
+          for (const indicator of byType("indicator")) add(task, indicator, "推動指標");
+        }
+        for (const schedule of byType("schedule")) {
+          for (const task of byType("task")) add(schedule, task, "相關任務");
+          for (const project of byType("project")) add(schedule, project, "相關專案");
+        }
+        for (const record of byType("record")) {
+          for (const person of byType("person")) add(record, person, "相關人員");
+          for (const org of byType("organization")) add(record, org, "相關單位");
+          for (const task of byType("task")) add(record, task, "相關任務");
+        }
+        return suggestions.slice(0, 8);
+      };
+
+      const renderRelationMap = () => {
+        const box = document.getElementById("relation-map");
+        if (!box) return;
+        const cardsById = new Map(
+          [...document.querySelectorAll("[data-entity-id]")].map((card) => [
+            card.dataset.entityId,
+            card,
+          ]),
+        );
+        const existing = [...document.querySelectorAll("[data-relation-id]")].map((card) => {
+          const fromId = card.querySelector('[data-field="from_entity_id"]')?.value || "";
+          const toId = card.querySelector('[data-field="to_entity_id"]')?.value || "";
+          const from = cardsById.get(fromId);
+          const to = cardsById.get(toId);
+          const relationType = card.querySelector('[data-field="relation_type"]')?.value ||
+            "相關";
+          if (!from || !to) return "";
+          return `<div class="relation-edge"><strong>${
+            esc(entityNameFromCard(from))
+          }</strong><span class="relation-chip">${
+            esc(relationType)
+          }</span><strong>${esc(entityNameFromCard(to))}</strong><small>已建立</small></div>`;
+        }).filter(Boolean);
+
+        const suggestions = suggestRelations().map((item) =>
+          `<div class="relation-suggestion"><strong>${
+            esc(item.fromName)
+          }</strong><span class="relation-chip">${
+            esc(item.relationType)
+          }</span><strong>${
+            esc(item.toName)
+          }</strong><button type="button" data-add-suggested-relation data-from="${
+            attr(item.fromId)
+          }" data-to="${attr(item.toId)}" data-relation="${
+            attr(item.relationType)
+          }">加入</button></div>`
+        );
+
+        box.innerHTML = [...existing, ...suggestions].join("");
+      };
+
+      const mergeStructuredFields = (card, fields) => {
+        const merged = { ...(fields || {}) };
+        card.querySelectorAll("[data-structured-field]").forEach((input) => {
+          const row = input.closest("[data-structured-types]");
+          if (row?.classList.contains("structured-hidden")) return;
+          const key = input.dataset.structuredField;
+          if (!key) return;
+          if (input.type === "checkbox") {
+            if (key === "syncGoogleCalendar") {
+              merged.syncGoogleCalendar = Boolean(input.checked);
+              delete merged.sync_gcal;
+            } else {
+              merged[key] = Boolean(input.checked);
+            }
+            return;
+          }
+          const value = (input.value || "").trim();
+          if (value) {
+            merged[key] = value;
+            if (key === "start") merged.date = value;
+          } else {
+            delete merged[key];
+            if (key === "start") delete merged.date;
+          }
+        });
+        return merged;
+      };
+
+      const updateStructuredVisibility = (card) => {
+        const active = card.querySelector('[data-field="entity_type"]')?.value || "unknown";
+        card.querySelector("[data-structured-root]")?.setAttribute(
+          "data-active-entity-type",
+          active,
+        );
+        const caption = card.querySelector("[data-structured-caption]");
+        if (caption) caption.textContent = DRAFT.structuredCaptions[active] || "自動寫回 JSON";
+        card.querySelectorAll("[data-structured-types]").forEach((row) => {
+          const types = (row.dataset.structuredTypes || "").split(",").map((item) => item.trim());
+          row.classList.toggle(
+            "structured-hidden",
+            !types.includes("all") && !types.includes(active),
+          );
+        });
+      };
+
+      const updateAllStructuredVisibility = () => {
+        document.querySelectorAll("[data-entity-id]").forEach(updateStructuredVisibility);
+      };
+
+      const setStructuredValue = (card, key, value) => {
+        const input = card.querySelector(`[data-structured-field="${key}"]`);
+        if (!input || value === undefined || value === null) return;
+        if (input.type === "checkbox") input.checked = Boolean(value);
+        else input.value = String(value || "");
+      };
+
+      const collectDraftPayload = (status, config) => {
+        const entities = [...document.querySelectorAll("[data-entity-id]")].map((card) => ({
+          id: card.dataset.entityId,
+          client_id: card.dataset.entityId,
+          entity_type: card.querySelector('[data-field="entity_type"]').value,
+          action: card.querySelector('[data-field="action"]').value,
+          display_name: card.querySelector('[data-field="display_name"]').value,
+          canonical_name: card.querySelector('[data-field="canonical_name"]').value,
+          existing_notion_page_id:
+            card.querySelector('[data-field="existing_notion_page_id"]')?.value || "",
+          existing_notion_url:
+            card.querySelector('[data-field="existing_notion_url"]')?.value || "",
+          fields: mergeStructuredFields(
+            card,
+            parseJsonField(card.querySelector('[data-field="fields"]')),
+          ),
+          status: status === "confirmed" ? "confirmed" : "edited",
+        }));
+
+        const relations = [...document.querySelectorAll("[data-relation-id]")].map((card) => ({
+          id: card.dataset.relationId,
+          from_entity_id: card.querySelector('[data-field="from_entity_id"]').value,
+          to_entity_id: card.querySelector('[data-field="to_entity_id"]').value,
+          relation_type: card.querySelector('[data-field="relation_type"]').value,
+          action: card.querySelector('[data-field="action"]').value,
+          direction: card.querySelector('[data-field="direction"]').value,
+          metadata: parseJsonField(card.querySelector('[data-field="metadata"]')),
+          status: status === "confirmed" ? "confirmed" : "edited",
+        }));
+
+        return {
+          draftId: config.draftId,
+          token: config.token,
+          summary: document.getElementById("draft-summary").value,
+          primaryIntent: document.getElementById("draft-intent").value,
+          status,
+          entities,
+          relations,
+        };
+      };
+
+      const searchRegistry = async (card, config) => {
+        const query = card.querySelector('[data-field="lookup_query"]')?.value ||
+          card.querySelector('[data-field="canonical_name"]')?.value ||
+          card.querySelector('[data-field="display_name"]')?.value ||
+          "";
+        if (!query.trim()) {
+          toast("請先輸入搜尋關鍵字");
+          return;
+        }
+        const search = new URL(config.searchApi);
+        search.searchParams.set("draft", config.draftId);
+        search.searchParams.set("token", config.token);
+        search.searchParams.set("q", query);
+        search.searchParams.set(
+          "entityType",
+          card.querySelector('[data-field="entity_type"]').value || "",
+        );
+        const response = await fetch(search.toString());
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || data.error || "搜尋失敗");
+        renderLookupResults(card, data.results || []);
+      };
+
+      const renderLookupResults = (card, results) => {
+        const box = card.querySelector("[data-lookup-results]");
+        if (!box) return;
+        if (!results.length) {
+          box.innerHTML = `<p class="empty">沒有找到相近既有資料。</p>`;
+          return;
+        }
+        box.innerHTML = results.map((item) => {
+          const meta = [item.kind, item.organization, item.phone, item.address]
+            .filter(Boolean)
+            .join(" / ");
+          const payload = attr(JSON.stringify(item));
+          return `
+            <button type="button" class="lookup-result" data-lookup-apply="${payload}">
+              <span><strong>${esc(item.canonicalName || "")}</strong><span>${
+            esc(meta)
+          }</span></span>
+              <span>${Math.round((item.score || 0) * 100)}%</span>
+            </button>`;
+        }).join("");
+      };
+
+      const applyRegistryResult = (card, item) => {
+        if (!card || !item) return;
+        card.querySelector('[data-field="action"]').value = "reuse";
+        card.querySelector('[data-field="display_name"]').value = item.canonicalName || "";
+        card.querySelector('[data-field="canonical_name"]').value = item.canonicalName || "";
+        card.querySelector('[data-field="existing_notion_page_id"]').value = item.notionPageId ||
+          "";
+        card.querySelector('[data-field="existing_notion_url"]').value = item.notionUrl || "";
+        const fields = parseJsonField(card.querySelector('[data-field="fields"]'));
+        const merged = {
+          ...fields,
+          aliases: item.aliases || fields.aliases,
+          phone: item.phone || fields.phone,
+          address: item.address || fields.address,
+          organization: item.organization || fields.organization,
+          note: item.note || fields.note,
+          registryMatch: {
+            kind: item.kind || "",
+            canonicalName: item.canonicalName || "",
+            aliases: item.aliases || [],
+            phone: item.phone || "",
+            address: item.address || "",
+            organization: item.organization || "",
+            note: item.note || "",
+          },
+        };
+        card.querySelector('[data-field="fields"]').value = JSON.stringify(merged, null, 2);
+        setStructuredValue(card, "phone", merged.phone);
+        setStructuredValue(card, "address", merged.address);
+        setStructuredValue(card, "note", merged.note);
+        const matchBox = card.querySelector("[data-registry-match]");
+        if (matchBox) matchBox.outerHTML = renderRegistryMatchHtml(merged.registryMatch);
+        refreshRelationEntityOptions();
+      };
+
+      const buildDraftConfig = (data) => {
+        const apiBase = params.get("api") || "";
+        const inferAction = (path) => {
+          if (!apiBase) return "";
+          try {
+            const url = new URL(apiBase);
+            url.pathname = url.pathname.replace(/\/liff\/draft\.json$/, `/liff/draft${path}`);
+            return url.toString();
+          } catch {
+            return "";
+          }
+        };
+        return {
+          draftId: data.draft.id,
+          token: data.draft.liffToken,
+          saveApi: params.get("saveApi") || inferAction("/save"),
+          searchApi: params.get("searchApi") || inferAction("/registry-search"),
+        };
+      };
+
+      const renderDraft = (data) => {
+        const config = buildDraftConfig(data);
+        if (!config.saveApi || !config.searchApi) {
+          throw new Error("缺少 saveApi 或 searchApi 參數，無法呼叫 Supabase JSON API。");
+        }
+        document.title = data.draft.summary || "V3 草稿編輯";
+        document.body.classList.add("has-sticky");
+
+        const intentOptionsHtml = optionList(DRAFT.intents, data.draft.primaryIntent || "v3_draft");
+        const entitiesHtml = data.entities.length
+          ? data.entities.map(renderEntityCard).join("")
+          : `<p class="empty">尚無候選實體。</p>`;
+        const relationsHtml = data.relations.length
+          ? data.relations.map((relation) => renderRelationCard(relation, data.entities)).join("")
+          : `<p class="empty">尚無候選關聯，下一步可在此建立人員、單位、資源、任務之間的連線。</p>`;
+        const attachmentsHtml = data.attachments.length
+          ? data.attachments.map(renderAttachmentRow).join("")
+          : `<li class="empty">尚無附件。</li>`;
+
+        app.innerHTML = `
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">LINE Assistant V3</p>
+              <h1>草稿編輯工作台</h1>
+            </div>
+            <span class="status ${
+          draftStatusClass(data.draft.status)
+        }">${esc(data.draft.status || "")}</span>
+          </header>
+          <section class="panel">
+            <label class="field">
+              <span>摘要</span>
+              <textarea id="draft-summary" rows="3">${esc(data.draft.summary || "")}</textarea>
+            </label>
+            <label class="field">
+              <span>主要處理類型</span>
+              <select id="draft-intent">${intentOptionsHtml}</select>
+            </label>
+            <p class="hint">這裡儲存的是草稿，不會正式寫入 Notion 或 Google Calendar。</p>
+          </section>
+          <section class="panel">
+            <h2>原始訊息</h2>
+            <pre>${esc(data.draft.rawText || "")}</pre>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>候選實體 <span id="entity-count">${data.entities.length}</span></h2>
+              <button type="button" class="mini-button" id="add-entity">新增實體</button>
+            </div>
+            <div class="entity-list" id="entity-list">${entitiesHtml}</div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>候選關聯 <span id="relation-count">${data.relations.length}</span></h2>
+              <button type="button" class="mini-button" id="add-relation">新增關聯</button>
+            </div>
+            <div class="relation-map" id="relation-map"></div>
+            <div class="relation-list" id="relation-list">${relationsHtml}</div>
+          </section>
+          <section class="panel">
+            <h2>附件 <span>${data.attachments.length}</span></h2>
+            <ul class="attachments">${attachmentsHtml}</ul>
+          </section>
+          <footer class="sticky-actions">
+            <button type="button" class="secondary" data-save="editing">儲存草稿</button>
+            <button type="button" class="primary" data-save="confirmed">確認草稿</button>
+            <button type="button" class="danger" data-save="cancelled">取消草稿</button>
+          </footer>`;
+
+        const datalist = document.getElementById("relation-suggestions");
+        if (datalist) {
+          datalist.innerHTML = DRAFT.relationTypes.map((name) =>
+            `<option value="${attr(name)}"></option>`
+          ).join("");
+        }
+
+        bindDraftEvents(config);
+        renderRelationMap();
+        updateAllStructuredVisibility();
+      };
+
+      const bindDraftEvents = (config) => {
+        document.getElementById("add-entity")?.addEventListener("click", () => {
+          const list = document.getElementById("entity-list");
+          if (!list) return;
+          clearEmpty(list);
+          list.insertAdjacentHTML("beforeend", newEntityCard());
+          refreshRelationEntityOptions();
+          updateAllStructuredVisibility();
+          toast("已新增候選實體");
+        });
+
+        document.getElementById("add-relation")?.addEventListener("click", () => {
+          if (document.querySelectorAll("[data-entity-id]").length < 2) {
+            toast("至少需要兩個候選實體才能建立關聯");
+            return;
+          }
+          const list = document.getElementById("relation-list");
+          if (!list) return;
+          clearEmpty(list);
+          list.insertAdjacentHTML("beforeend", newRelationCard());
+          refreshRelationEntityOptions();
+          toast("已新增候選關聯");
+        });
+
+        document.addEventListener("click", async (event) => {
+          const lookup = event.target.closest("[data-lookup]");
+          if (lookup) {
+            const card = lookup.closest("[data-entity-id]");
+            lookup.disabled = true;
+            try {
+              await searchRegistry(card, config);
+            } catch (error) {
+              toast(error.message || String(error));
+            } finally {
+              lookup.disabled = false;
+            }
+            return;
+          }
+
+          const result = event.target.closest("[data-lookup-apply]");
+          if (result) {
+            try {
+              const payload = JSON.parse(result.dataset.lookupApply || "{}");
+              applyRegistryResult(result.closest("[data-entity-id]"), payload);
+              toast("已套用既有資料，動作改為沿用");
+            } catch (error) {
+              toast(error.message || String(error));
+            }
+            return;
+          }
+
+          const suggested = event.target.closest("[data-add-suggested-relation]");
+          if (suggested) {
+            const list = document.getElementById("relation-list");
+            if (!list) return;
+            clearEmpty(list);
+            list.insertAdjacentHTML(
+              "beforeend",
+              relationCardFromSuggestion(
+                suggested.dataset.from,
+                suggested.dataset.to,
+                suggested.dataset.relation,
+              ),
+            );
+            refreshRelationEntityOptions();
+            toast("已加入建議關聯");
+            return;
+          }
+
+          const button = event.target.closest("[data-save]");
+          if (!button) return;
+          button.disabled = true;
+          try {
+            const payload = collectDraftPayload(button.dataset.save, config);
+            const response = await fetch(config.saveApi, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || data.error || "儲存失敗");
+            toast(data.message || "已儲存");
+            const statusBadge = document.querySelector(".status");
+            if (statusBadge && data.draft?.draft?.status) {
+              statusBadge.textContent = data.draft.draft.status;
+              statusBadge.className = `status ${draftStatusClass(data.draft.draft.status)}`;
+            }
+          } catch (error) {
+            toast(error.message || String(error));
+          } finally {
+            button.disabled = false;
+          }
+        });
+
+        document.addEventListener("input", (event) => {
+          if (event.target.matches('[data-entity-id] input, [data-entity-id] select')) {
+            if (event.target.matches('[data-field="entity_type"]')) {
+              updateStructuredVisibility(event.target.closest("[data-entity-id]"));
+            }
+            refreshRelationEntityOptions();
+          }
+          if (event.target.matches('[data-relation-id] input, [data-relation-id] select')) {
+            renderRelationMap();
+          }
+        });
+      };
+
       (async () => {
         try {
           await initLiff();
-          const mode = params.get("mode") || (params.has("date") ? "briefing" : "record");
+          const mode = params.get("mode") ||
+            (params.has("draft") ? "draft" : params.has("date") ? "briefing" : "record");
           if (mode === "briefing") {
             const apiBase = params.get("api");
             if (!apiBase) throw new Error("缺少 briefing API URL。");
@@ -657,6 +1952,18 @@
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
             renderBriefing(data);
+            return;
+          }
+
+          if (mode === "draft") {
+            const apiBase = params.get("api");
+            if (!apiBase) throw new Error("缺少 draft API URL。");
+            const res = await fetch(apiUrlWithParams(apiBase, ["draft", "token", "liffId"]), {
+              headers: { accept: "application/json" },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || data.error || "讀取失敗");
+            renderDraft(data);
             return;
           }
 
